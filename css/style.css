@@ -1,0 +1,940 @@
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HTML / BODY
+========================================================= */
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  font-family:
+    Arial,
+    "Noto Sans Thai",
+    sans-serif;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  /*
+     ให้พื้นหลังหลักเป็นสีสำรอง
+     ส่วน bg.png ใช้ .background
+  */
+  background: #ffffff;
+
+  /*
+     ป้องกันการลากหน้าจอ
+  */
+  touch-action: none;
+
+  /*
+     ป้องกันการเลือกภาพ
+  */
+  user-select: none;
+
+  /*
+     สร้าง stacking context
+  */
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+/*
+   ใช้ .background เป็นพื้นหลังโดยตรง
+
+   แก้ปัญหา:
+   - iPhone
+   - Android
+   - iPad
+   - Tablet
+
+   ที่บางครั้ง z-index: -1
+   ทำให้ background หาย
+*/
+
+.background {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  /*
+     รองรับมือถือที่มี dynamic viewport
+  */
+  min-width: 100%;
+  min-height: 100%;
+
+  background-image:
+    url("../images/bg.png");
+
+  background-position:
+    center center;
+
+  background-repeat:
+    no-repeat;
+
+  background-size:
+    cover;
+
+  /*
+     สำคัญ
+     ห้ามใช้ z-index: -1
+  */
+  z-index: 0;
+
+  pointer-events: none;
+
+  /*
+     ป้องกันปัญหาบาง browser
+  */
+  transform: translateZ(0);
+
+  will-change: transform;
+}
+
+
+/* =========================================================
+   BOOK WRAPPER
+========================================================= */
+
+.book-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 90vh;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  perspective: 2200px;
+
+  overflow: visible;
+
+  /*
+     ให้อยู่เหนือ background
+  */
+  z-index: 1;
+}
+
+
+/* =========================================================
+   BOOK
+========================================================= */
+
+/*
+   รูปต้นฉบับ 1 หน้า
+
+   2480 × 3508
+
+   อัตราส่วนประมาณ
+
+   0.7069
+*/
+
+#book {
+
+  /*
+     พื้นที่หน้าคู่
+
+     2 × 2480
+     = 4960
+
+     สูง 3508
+  */
+
+  width:
+    min(92vw, 1350px);
+
+  height:
+    min(78vh, 955px);
+
+  max-width:
+    1350px;
+
+  max-height:
+    955px;
+
+  position: relative;
+
+  /*
+     สำคัญสำหรับ PageFlip
+  */
+  transform-style:
+    preserve-3d;
+
+  /*
+     ไม่ใส่ filter หนักกับ book
+  */
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  /*
+     กระดาษ
+  */
+  box-shadow:
+    inset
+    0 0 14px
+    rgba(0, 0, 0, 0.045);
+
+  /*
+     3D
+  */
+  transform-style:
+    preserve-3d;
+
+  backface-visibility:
+    hidden;
+
+  /*
+     ป้องกัน margin / gap
+  */
+  margin: 0 !important;
+
+  padding: 0 !important;
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.page > img {
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  /*
+     แสดงภาพครบ
+     ไม่ crop
+  */
+  object-fit:
+    contain;
+
+  object-position:
+    center;
+
+  background:
+    #ffffff;
+
+  /*
+     ป้องกันลากรูป
+  */
+  user-select:
+    none;
+
+  -webkit-user-drag:
+    none;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   COVER
+========================================================= */
+
+.cover {
+
+  position: relative;
+
+  background:
+    #ffffff;
+
+  overflow:
+    hidden;
+
+  /*
+     ปกแข็ง
+  */
+  box-shadow:
+
+    inset
+    0 0 2px
+    rgba(0, 0, 0, 0.18),
+
+    inset
+    0 0 25px
+    rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   COVER IMAGE
+========================================================= */
+
+.cover > img {
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit:
+    contain;
+
+  object-position:
+    center;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   PAGE FLIP CONTAINER
+========================================================= */
+
+.stf__parent {
+
+  position: relative;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  /*
+     เงาหนังสือ
+  */
+  filter:
+    drop-shadow(
+      0 18px 25px
+      rgba(0, 0, 0, 0.18)
+    )
+
+    drop-shadow(
+      0 30px 45px
+      rgba(0, 0, 0, 0.14)
+    );
+}
+
+
+/* =========================================================
+   PAGE FLIP WRAPPER
+========================================================= */
+
+.stf__wrapper {
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  gap: 0 !important;
+}
+
+
+/* =========================================================
+   PAGE BLOCK
+========================================================= */
+
+.stf__block {
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  overflow:
+    visible !important;
+}
+
+
+/* =========================================================
+   PAGE ITEM
+========================================================= */
+
+.stf__item {
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  /*
+     ไม่ให้ filter
+     สร้างขอบโปร่ง
+  */
+  filter:
+    none !important;
+
+  transform-origin:
+    center center;
+}
+
+
+/* =========================================================
+   CENTER SPINE
+========================================================= */
+
+/*
+   สันหนังสือสำหรับ Desktop
+*/
+
+@media (min-width: 769px) {
+
+  #book::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    left: 50%;
+
+    width: 2px;
+
+    transform:
+      translateX(-50%);
+
+    background:
+      linear-gradient(
+        to right,
+
+        rgba(0, 0, 0, 0.08),
+
+        rgba(255, 255, 255, 0.30),
+
+        rgba(0, 0, 0, 0.08)
+      );
+
+    box-shadow:
+      0 0 5px
+      rgba(0, 0, 0, 0.08);
+
+    pointer-events:
+      none;
+
+    z-index:
+      100;
+  }
+
+}
+
+
+/* =========================================================
+   FLIPPING EFFECT
+========================================================= */
+
+#book.book-flipping {
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls {
+
+  position: fixed;
+
+  left: 50%;
+
+  bottom: 18px;
+
+  transform:
+    translateX(-50%);
+
+  z-index: 999;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   PAGE NUMBER
+========================================================= */
+
+#pageNum {
+
+  min-width:
+    64px;
+
+  padding:
+    7px 15px;
+
+  border-radius:
+    30px;
+
+  color:
+    #ffffff;
+
+  background:
+    rgba(0, 0, 0, 0.38);
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
+  text-align:
+    center;
+
+  box-shadow:
+    0 4px 15px
+    rgba(0, 0, 0, 0.18);
+
+  text-shadow:
+    0 1px 4px
+    rgba(0, 0, 0, 0.5);
+}
+
+
+/* =========================================================
+   DESKTOP
+   1200px+
+========================================================= */
+
+@media (min-width: 1200px) {
+
+  #book {
+
+    width:
+      min(90vw, 1350px);
+
+    height:
+      min(78vh, 955px);
+  }
+
+}
+
+
+/* =========================================================
+   LAPTOP
+   769px - 1199px
+========================================================= */
+
+@media (
+  min-width: 769px
+) and (
+  max-width: 1199px
+) {
+
+  .book-wrapper {
+
+    height:
+      88vh;
+  }
+
+
+  #book {
+
+    width:
+      92vw;
+
+    height:
+      auto;
+
+    aspect-ratio:
+      4960 / 3508;
+
+    max-width:
+      92vw;
+
+    max-height:
+      none;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET / IPAD
+   481px - 768px
+========================================================= */
+
+@media (
+  min-width: 481px
+) and (
+  max-width: 768px
+) {
+
+  /*
+     พื้นหลังสำหรับ iPad
+  */
+
+  .background {
+
+    width:
+      100vw;
+
+    height:
+      100vh;
+
+    background-position:
+      center center;
+
+    background-size:
+      cover;
+
+    background-repeat:
+      no-repeat;
+
+    z-index:
+      0;
+  }
+
+
+  .book-wrapper {
+
+    height:
+      88vh;
+
+    padding:
+      15px;
+
+    z-index:
+      1;
+  }
+
+
+  #book {
+
+    /*
+       Portrait mode
+       1 หน้า
+    */
+
+    width:
+      min(82vw, 560px);
+
+    height:
+      auto;
+
+    aspect-ratio:
+      2480 / 3508;
+
+    max-width:
+      82vw;
+
+    max-height:
+      82vh;
+  }
+
+
+  /*
+     ไม่มีสันกลาง
+     เพราะเป็นหน้าเดี่ยว
+  */
+
+  #book::after {
+
+    display:
+      none;
+  }
+
+
+  #pageNum {
+
+    font-size:
+      12px;
+
+    padding:
+      6px 13px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   <= 480px
+========================================================= */
+
+@media (max-width: 480px) {
+
+  /*
+     พื้นหลังสำหรับมือถือ
+  */
+
+  .background {
+
+    width:
+      100vw;
+
+    height:
+      100vh;
+
+    min-width:
+      100vw;
+
+    min-height:
+      100vh;
+
+    background-image:
+      url("../images/bg.png");
+
+    background-position:
+      center center;
+
+    background-repeat:
+      no-repeat;
+
+    background-size:
+      cover;
+
+    z-index:
+      0;
+  }
+
+
+  .book-wrapper {
+
+    width:
+      100%;
+
+    height:
+      84vh;
+
+    padding:
+      10px;
+
+    z-index:
+      1;
+  }
+
+
+  #book {
+
+    /*
+       หน้าเดียว
+    */
+
+    width:
+      min(88vw, 380px);
+
+    height:
+      auto;
+
+    aspect-ratio:
+      2480 / 3508;
+
+    max-width:
+      88vw;
+
+    max-height:
+      80vh;
+  }
+
+
+  /*
+     ซ่อนสันกลาง
+  */
+
+  #book::after {
+
+    display:
+      none;
+  }
+
+
+  .controls {
+
+    bottom:
+      9px;
+  }
+
+
+  #pageNum {
+
+    min-width:
+      55px;
+
+    padding:
+      5px 10px;
+
+    font-size:
+      11px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+   <= 360px
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .background {
+
+    width:
+      100vw;
+
+    height:
+      100vh;
+
+    background-position:
+      center center;
+
+    background-size:
+      cover;
+
+    z-index:
+      0;
+  }
+
+
+  #book {
+
+    width:
+      86vw;
+
+    max-height:
+      76vh;
+  }
+
+
+  .book-wrapper {
+
+    height:
+      80vh;
+
+    z-index:
+      1;
+  }
+
+}
+
+
+/* =========================================================
+   SAFARI / IOS FIX
+========================================================= */
+
+@supports (-webkit-touch-callout: none) {
+
+  .background {
+
+    position:
+      fixed;
+
+    top:
+      0;
+
+    left:
+      0;
+
+    width:
+      100vw;
+
+    height:
+      100vh;
+
+    min-height:
+      -webkit-fill-available;
+
+    background-position:
+      center center;
+
+    background-repeat:
+      no-repeat;
+
+    background-size:
+      cover;
+
+    z-index:
+      0;
+  }
+
+
+  .book-wrapper {
+
+    position:
+      relative;
+
+    z-index:
+      1;
+  }
+
+}
+
+
+/* =========================================================
+   PREVENT IMAGE SELECTION
+========================================================= */
+
+img {
+
+  -webkit-user-drag:
+    none;
+
+  user-select:
+    none;
+
+  -webkit-user-select:
+    none;
+
+  -moz-user-select:
+    none;
+
+  -ms-user-select:
+    none;
+}
